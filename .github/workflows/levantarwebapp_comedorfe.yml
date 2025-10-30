@@ -42,8 +42,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          # upload only the build output (static files) instead of the entire repo
-          path: ./dist
+          # upload dist + package.json so Azure can run 'npm start' to serve the built files
+          path: |
+            ./dist
+            ./package.json
 
   deploy:
     runs-on: ubuntu-latest
