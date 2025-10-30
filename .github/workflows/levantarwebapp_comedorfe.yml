@@ -23,17 +23,27 @@ jobs:
         with:
           node-version: '22.x'
 
-      - name: npm install, build, and test
+      - name: Install dependencies and build
         run: |
-          npm install
-          npm run build --if-present
+          # use a reproducible install in CI
+          npm ci
+          # fail the job if build script is missing or fails
+          npm run build
+      - name: Verify build output
+        run: |
+          echo "=== Listing dist ==="
+          ls -la ./dist || (echo "dist not found — build failed or output path is different" && exit 1)
+          du -sh ./dist || true
+      - name: Run tests (if present)
+        run: |
           npm run test --if-present
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: .
+          # upload only the build output (static files) instead of the entire repo
+          path: ./dist
 
   deploy:
     runs-on: ubuntu-latest
@@ -61,5 +71,6 @@ jobs:
         with:
           app-name: 'comedorfe'
           slot-name: 'Production'
-          package: .
+          # deploy the built static site (dist folder)
+          package: ./dist
           
