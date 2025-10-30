@@ -71,6 +71,6 @@ jobs:
         with:
           app-name: 'comedorfe'
           slot-name: 'Production'
-          # deploy the built static site (dist folder)
-          package: ./dist
+          # deploy the downloaded artifact (which contains dist's contents at root)
+          package: .
           
